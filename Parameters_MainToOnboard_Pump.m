@@ -136,10 +136,11 @@ LH2Model.S_valve2 = 3.1416*(2.5*0.0035)^2; % [m^2] orifice area of ET vent valve
 LH2Model.ETVentState = 0;               % initial ET vent state (starts closed) 
 
 % Pump settings
-LH2Model.PumpMassTransferFast=50*kgminTokgsec;      % [kg/s] H2 mass transfer being pumped at "Fast" mode
-LH2Model.PumpMassTransferSlow=25*kgminTokgsec;      % [kg/s] H2 mass transfer being pumped at "Slow" mode
+LH2Model.PumpMassTransferFast=30*kgminTokgsec;      % [kg/s] H2 mass transfer being pumped at "Fast" mode
+LH2Model.PumpMassTransferSlow=15*kgminTokgsec;      % [kg/s] H2 mass transfer being pumped at "Slow" mode
 LH2Model.PumpHeatCond=30;                           % [W] Estimated conducted Heat Rate at the pump 
 LH2Model.PumpHeatGain=650;                          % [W/1000kghr] Estimated Heat gain due to pump inefficiencies (mesured @1000 kg/hr flowrate)
+LH2Model.PumpIsenEff=0.7;
 
 % Pressure settings
 LH2Model.p_ST_low = 7*barToPa;        % [Pa] ST vent valve lower pressure threshold (= PRD hysteresis pressure)

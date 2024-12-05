@@ -1,4 +1,4 @@
-function data = LH2Simulate_Pump(name)
+function data = LH2Simulate_Pump_v2(name)
 % main code for LH2 transfer simulation
 
 % here : (ST) or 1 is 17,000 gallon horizontal trailer - feeding vessel 
@@ -76,7 +76,8 @@ x0 = [  P.mL10;
         0;0;0;0;
         0;0;0;0;
         0;0;0;0;
-        0;0;0;
+        0;0;0;0;
+        0;
 ];
 
 % declare and initialize global variables
@@ -655,7 +656,26 @@ function dxdt = LH2dxdt(P,t,x)
     %---------------------
     % Heat gains at the pump
     %---------------------
-    QdotPump=P.PumpHeatCond+P.PumpHeatGain*(Jtr0*3600/1000); % Fixed heat gain (conduction) + variable proportional to flow rate (inefficiencies) 
+    try
+        str_L= refpropm('S','T',TL1(P.nL1),'P',pv1/1000,'PARAHYD');
+        htr_L= refpropm('H','T',TL1(P.nL1),'P',pv1/1000,'PARAHYD');
+    catch
+        str_L=refpropm('S','T',TL1(P.nL1),'Q',0,'PARAHYD');
+        htr_L=refpropm('H','T',TL1(P.nL1),'Q',0,'PARAHYD');
+    end 
+    Pumphisen=refpropm('H','P',pv2/1000,'S',str_L,'hydrogen'); % isentropic compression
+    PumpPisen=Jtr0*(Pumphisen-htr_L);
+    if pv2>=pv1 % Pump power is positive (compression), efficiency adds consumed power
+        PumpPower=PumpPisen/P.PumpIsenEff;
+        htr_L_real=(Pumphisen-htr_L)/P.PumpIsenEff+htr_L;
+    else    % Pump power is negative (expansion), efficiency reduces "generated power", adds inefficiencies to expansion 
+        PumpPower=PumpPisen*P.PumpIsenEff;
+        htr_L_real=(Pumphisen-htr_L)*P.PumpIsenEff+htr_L;
+    end
+    PumpLosses=PumpPower-PumpPisen;
+    QdotPump=P.PumpHeatCond+PumpLosses;
+    % QdotPump=P.PumpHeatCond+P.PumpHeatGain*(Jtr0*3600/1000); % Fixed heat gain (conduction) + variable proportional to flow rate (inefficiencies)
+
 
     %---------------------
     % pdV work, ST and ET
@@ -672,14 +692,15 @@ function dxdt = LH2dxdt(P,t,x)
     %---------------------
     % enthalpy terms, modified for ideal vs. real gases
     %---------------------
-    if TL1(P.nL1) > 32 
-        htr_L = P.c_L*TL1(P.nL1); 
-    else
-        if TL1(P.nL1) < 14
-            TL1(P.nL1) = 14;
-        end  
-        htr_L= refpropm('H','T',TL1(P.nL1),'Q',0,'PARAHYD');
-    end
+    htr_L=htr_L_real;
+    % if TL1(P.nL1) > 32 
+    %     htr_L = P.c_L*TL1(P.nL1); 
+    % else
+    %     if TL1(P.nL1) < 14
+    %         TL1(P.nL1) = 14;
+    %     end  
+    %     htr_L= refpropm('H','T',TL1(P.nL1),'Q',0,'PARAHYD');
+    % end
     
     if Ts1 > 32
          hcd1 = P.c_p*Ts1;
@@ -852,6 +873,8 @@ function dxdt = LH2dxdt(P,t,x)
     ZII = ST_vent_complete;
     ZJJ = QdotTopfill;
     ZKK = (ratio_top_bottom) * Jtr ;
+    ZLL = PumpPower;
+    ZMM = htr_L_real;
     
    
     % state derivatives
@@ -910,6 +933,8 @@ function dxdt = LH2dxdt(P,t,x)
     dxdt(P.nL1+P.nV1+P.nL2+P.nV2+47) = 1*(ZII-x(P.nL1+P.nV1+P.nL2+P.nV2+47));
     dxdt(P.nL1+P.nV1+P.nL2+P.nV2+48) = 1*(ZJJ-x(P.nL1+P.nV1+P.nL2+P.nV2+48));
     dxdt(P.nL1+P.nV1+P.nL2+P.nV2+49) = 1*(ZKK-x(P.nL1+P.nV1+P.nL2+P.nV2+49));
+    dxdt(P.nL1+P.nV1+P.nL2+P.nV2+50) = 1*(ZLL-x(P.nL1+P.nV1+P.nL2+P.nV2+50));
+    dxdt(P.nL1+P.nV1+P.nL2+P.nV2+51) = 1*(ZMM-x(P.nL1+P.nV1+P.nL2+P.nV2+51));
 
     % must return a column vector
     dxdt = dxdt';
@@ -1031,6 +1056,8 @@ end
 
     data.QdotTopfill = xout(:,P.nL1+P.nV1+P.nL2+P.nV2+48) ; % Vapor cooling due to top fill
     data.JvEvapTopfill = xout(:,P.nL1+P.nV1+P.nL2+P.nV2+49) ; % Liquid evaporation due to top fill
+    data.PumpPower = xout(:,P.nL1+P.nV1+P.nL2+P.nV2+50) ; % LH2 pump power
+    data.hAfterPump = xout(:,P.nL1+P.nV1+P.nL2+P.nV2+51) ; % LH2 pump power
 
     % IMPORTANT: ETTTVentstate must be the last one. The row number must be
 % always updated & must be the last.

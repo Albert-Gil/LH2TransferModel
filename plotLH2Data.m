@@ -75,6 +75,7 @@ grid on;
 
 if save==1
     saveas(gcf,path+"Fig1.png")
+    saveas(gcf,path+"Fig1.fig")
 end
 
 %% Figure 2: Temperatures.
@@ -99,6 +100,7 @@ grid on;
 
 if save==1
     saveas(gcf,path+"Fig2.png")
+    saveas(gcf,path+"Fig2.fig")
 end
 
 %% Figure 3: Pressures and internal energies.
@@ -147,6 +149,7 @@ ylim([0 max( [max(data.mv1) max(data.mv2)] )+10]);
 
 if save==1
     saveas(gcf,path+"Fig3.png")
+    saveas(gcf,path+"Fig3.fig")
 end
 
 %% Figure 4: Densities in storage.
@@ -171,6 +174,7 @@ grid on;
 
 if save==1
     saveas(gcf,path+"Fig4.png")
+    saveas(gcf,path+"Fig4.fig")
 end
 
 %% Figure 5: Venting flows and stored mass at ST.
@@ -196,6 +200,7 @@ grid on;
 
 if save==1
     saveas(gcf,path+"Fig5.png")
+    saveas(gcf,path+"Fig5.fig")
 end
 
 %% Figure 6: Venting flows and stored mass at Tank 2.
@@ -221,6 +226,7 @@ grid on;
 
 if save==1
     saveas(gcf,path+"Fig6.png")
+    saveas(gcf,path+"Fig6.fig")
 end
 
 %% Figure 7: Mass flows for vapor phases.
@@ -268,6 +274,7 @@ grid on;
 
 if save==1
     saveas(gcf,path+"Fig7.png")
+    saveas(gcf,path+"Fig7.fig")
 end
 
 %% Figure 8: Energy balance in T1 
@@ -362,6 +369,7 @@ end
 
 if save==1
     saveas(gcf,path+"Fig8.png")
+    saveas(gcf,path+"Fig8.fig")
 end
 
 % %% Figure 9: Zoom pressures with thresholds.
@@ -381,6 +389,7 @@ end
 % ylim([0 max( [max(data.pv1/100000) max(data.pv2/100000) max(P.p_ET_high/100000)] )+0.5]);
 % if save==1
 %     saveas(gcf,path+"Fig9.png")
+%     saveas(gcf,path+"Fig9.fig")
 % end
 % 
 % %% Figure 9.2: Zoom pressures with filled area.
@@ -405,6 +414,7 @@ end
 % legend('Pv T2','Venting pressure', 'location', 'south','NumColumns',2);
 % if save==1
 %     saveas(gcf,path+"Fig10.png")
+%     saveas(gcf,path+"Fig10.fig")
 % end
 
 %% Figure 10: Zoom ET Heat flows.
@@ -420,6 +430,7 @@ ylim([-15 5]);
 xlabel('Time (min)');
 grid on;
 if save==1
+    saveas(gcf,path+"Fig11.png")
     saveas(gcf,path+"Fig11.fig")
 end
 
@@ -437,6 +448,7 @@ legend('TOTAL mf', 'Evaporation mf','(-)Venting mf','Boiling mf', 'Top-fill evap
 grid on;
 
 if save==1
+    saveas(gcf,path+"Fig12.png")
     saveas(gcf,path+"Fig12.fig")
 end
 
@@ -491,6 +503,7 @@ legend('Pv2 T2','Venting pressure limits','','Venting region', 'location', 'sout
 % 
 % if save==1
 %     saveas(gcf,path+"Fig13.png")
+%     saveas(gcf,path+"Fig13.fig")
 % end
 % 
 % %% Figure 13: Temperatures of surface and liquid levels.
@@ -515,6 +528,7 @@ legend('Pv2 T2','Venting pressure limits','','Venting region', 'location', 'sout
 % 
 % if save==1
 %     saveas(gcf,path+"Fig14.png")
+%     saveas(gcf,path+"Fig14.fig")
 % end
 
 %% Figure 14: Pressure and Venting T2 with thresholds.
@@ -557,6 +571,7 @@ legend('Pv2 T2','Venting pressure limits','','Venting region', 'location', 'sout
 % 
 % if save==1
 %     saveas(gcf,path+"Fig15.png")
+%     saveas(gcf,path+"Fig15.fig")
 % end
 
 %% Figure 14: Pressure and Venting T2 with filled area.
@@ -599,6 +614,7 @@ legend('Pv2 T2','Venting pressure limits','','Venting region', 'location', 'sout
 % 
 % if save==1
 %     saveas(gcf,path+"Fig16.png")
+%     saveas(gcf,path+"Fig16.fig")
 % end
 
 %% Figure 15: Pressure and Venting T2 with filled area.
@@ -642,6 +658,7 @@ ylim([0 max(data.Boiloff_ET)+0.5]);
 
 if save==1
     saveas(gcf,path+"Fig17.png")
+    saveas(gcf,path+"Fig17.fig")
 end
 
 %% Figure 16: Figure 1 + Figure 15 RELATIVE Venting
@@ -724,6 +741,7 @@ yticks(0:1:25)
 
 if save==1
     saveas(gcf,path+"Fig18.png")
+    saveas(gcf,path+"Fig18.fig")
 end
 
 %% Figure 17: Transferred mass, effective transferred mass & Venting
@@ -757,6 +775,7 @@ yticks(0:1:15)
 
 if save==1
     saveas(gcf,path+"Fig19.png")
+    saveas(gcf,path+"Fig19.fig")
 end
 
 %% Figure 17: Process ending flags
@@ -769,3 +788,34 @@ grid on;
 xlim([0 data.t(end)/60]);
 % xlim([0 4.5]);
 ylim([0 1.05]);
+
+%%
+figure;
+set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.2 0.2 0.6 0.6]); % Enlarge figure to 70% of full screen.
+plot(data.t/60,data.YYY/1000)
+ylabel('Inefficiencies at pump [kW]');
+xlabel('Time [min]');
+legend('Pump','Location','northwest');
+grid on;
+xlim([0 data.t(end)/60]);
+if save==1
+    saveas(gcf,path+"Fig20.png")
+    saveas(gcf,path+"Fig20.fig")
+end
+
+%%
+for i = 1:length(data.t)
+LH2TinT2(i)=refpropm('T','P',data.pv2(i)/1000,'H',data.hAfterPump(i),'PARAHYD');
+end
+figure;
+set(gcf, 'Units', 'Normalized', 'OuterPosition', [0.2 0.2 0.6 0.6]); % Enlarge figure to 70% of full screen.
+plot(data.t/60,data.TL1(:,end),data.t/60,LH2TinT2)
+ylabel('Temperature [K]');
+xlabel('Time [min]');
+legend('Pump inlet','Pump outlet','Location','northwest');
+grid on;
+xlim([0 data.t(end)/60]);
+if save==1
+    saveas(gcf,path+"Fig21.png")
+    saveas(gcf,path+"Fig21.fig")
+end
