@@ -132,7 +132,7 @@ If you use this model, please cite both:
 
 **Albert Gil**  
 PhD Researcher, University of California, Irvine  
-https://www.linkedin.com/in/albert-gil/
+https://www.linkedin.com/in/albertgilesmendia/
 
 ---
 
